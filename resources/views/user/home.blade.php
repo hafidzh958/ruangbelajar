@@ -15,21 +15,21 @@
         <div data-aos="fade-right">
             <div class="inline-flex items-center gap-4 bg-white/10 backdrop-blur-xl border border-white/10 px-6 py-3 rounded-full mb-12 shadow-2xl flex-nowrap">
                 <span class="w-10 h-10 bg-secondary rounded-full flex items-center justify-center text-brand-dark transition-transform hover:rotate-12 duration-500"><i class="fas fa-bolt text-sm"></i></span>
-                <span class="text-white font-black text-xs tracking-[0.2em] uppercase italic opacity-90">Unlock Your Future Potential</span>
+                <span class="text-white font-black text-xs tracking-[0.2em] uppercase italic opacity-90">{{ $homeSetting->badge_text }}</span>
             </div>
             
             <h1 class="text-5xl md:text-8xl font-black leading-[0.95] tracking-tight mb-12 italic uppercase">
-                Bukan Sekadar <br /> <span class="bg-secondary text-brand-dark px-6 py-2 rounded-[2rem] inline-block mt-4 mb-4 transform -rotate-1 shadow-2xl shadow-yellow-400/20">Belajar,</span> <br />
-                Tapi <span class="text-blue-400 italic">Juara!</span>
+                {{ $homeSetting->title }} <br />
+                <span class="bg-secondary text-brand-dark px-6 py-2 rounded-[2rem] inline-block mt-4 mb-4 transform -rotate-1 shadow-2xl shadow-yellow-400/20">{{ $homeSetting->highlighted_title }}</span>
             </h1>
             
             <p class="text-xl md:text-2xl text-blue-100 font-medium leading-[1.8] mb-20 max-w-xl opacity-80 italic">
-                Platform bimbingan belajar dengan pendekatan personal dan kurikulum adaptif yang memastikan anak Anda berkembang pesat.
+                {{ $homeSetting->description }}
             </p>
             
             <div class="flex flex-col sm:flex-row gap-8">
-                <a href="{{ url('/register') }}" class="bg-white text-brand-deepBlue px-14 py-7 rounded-[3rem] font-black text-2xl hover:bg-secondary hover:text-brand-dark transition-all shadow-2xl shadow-white/5 active:scale-95 text-center flex items-center justify-center gap-4 group italic uppercase tracking-tighter">
-                    Daftar Program <i class="fas fa-chevron-right transition-transform group-hover:translate-x-3"></i>
+                <a href="{{ $homeSetting->button_link ?? url('/register') }}" class="bg-white text-brand-deepBlue px-14 py-7 rounded-[3rem] font-black text-2xl hover:bg-secondary hover:text-brand-dark transition-all shadow-2xl shadow-white/5 active:scale-95 text-center flex items-center justify-center gap-4 group italic uppercase tracking-tighter">
+                    {{ $homeSetting->button_text ?? 'Daftar Program' }} <i class="fas fa-chevron-right transition-transform group-hover:translate-x-3"></i>
                 </a>
                 <a href="https://wa.me/6283157112597" target="_blank" class="bg-blue-600/20 border-2 border-white/20 text-white px-14 py-7 rounded-[3rem] font-black text-2xl hover:bg-white hover:text-brand-dark transition-all active:scale-95 text-center flex items-center justify-center gap-4 group italic uppercase tracking-tighter">
                     <i class="fab fa-whatsapp text-3xl"></i> Konsultasi
@@ -40,7 +40,7 @@
         <!-- Illustration Content -->
         <div class="relative lg:block" data-aos="zoom-in" data-aos-delay="200">
              <div class="relative z-10 w-full rounded-[5rem] overflow-hidden shadow-[0_50px_100px_rgba(30,58,138,0.5)] border-8 border-white/5 group transition-transform duration-1000 hover:scale-[1.02]">
-                <img src="{{ asset('images/hero.png') }}" alt="Education Hero" class="w-full h-auto object-cover transform scale-105 group-hover:scale-100 transition-transform duration-1000 saturate-[1.2]">
+                <img src="{{ $homeSetting->hero_image ? asset('storage/'.$homeSetting->hero_image) : asset('images/hero.png') }}" alt="Education Hero" class="w-full h-auto object-cover transform scale-105 group-hover:scale-100 transition-transform duration-1000 saturate-[1.2]">
                 <div class="absolute inset-0 bg-gradient-to-t from-brand-deepBlue/80 via-transparent to-transparent"></div>
                 <div class="absolute bottom-16 left-16 p-8 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] max-w-xs transform group-hover:-translate-y-4 transition-transform duration-700">
                     <p class="font-black text-2xl italic tracking-tight mb-2">#EduInnovation</p>
@@ -62,22 +62,22 @@
             <div class="w-20 h-20 bg-blue-50 text-brand-blue rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 text-3xl transition-transform group-hover:rotate-12 duration-500 shadow-inner group-hover:bg-white group-hover:text-brand-deepBlue">
                 <i class="fas fa-user-friends"></i>
             </div>
-            <div class="text-6xl font-black text-brand-dark mb-4 italic tracking-tighter uppercase group-hover:text-white"><span class="count-up" data-target="100">0</span>+</div>
+            <div class="text-6xl font-black text-brand-dark mb-4 italic tracking-tighter uppercase group-hover:text-white"><span class="count-up" data-target="{{ $homeSetting->total_students }}">0</span>+</div>
             <p class="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] italic group-hover:text-blue-200">Siswa Aktif</p>
         </div>
         <div class="bg-white p-16 rounded-[4.5rem] text-center shadow-2xl shadow-blue-900/5 group hover:bg-brand-deepBlue transition-all duration-700 border border-blue-50" data-aos="fade-up" data-aos-delay="200">
             <div class="w-20 h-20 bg-blue-50 text-brand-blue rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 text-3xl transition-transform group-hover:-rotate-12 duration-500 shadow-inner group-hover:bg-white group-hover:text-brand-deepBlue">
                 <i class="fas fa-graduation-cap"></i>
             </div>
-            <div class="text-6xl font-black text-brand-dark mb-4 italic tracking-tighter uppercase group-hover:text-white"><span class="count-up" data-target="15">0</span>+</div>
+            <div class="text-6xl font-black text-brand-dark mb-4 italic tracking-tighter uppercase group-hover:text-white"><span class="count-up" data-target="{{ $homeSetting->total_tutors }}">0</span>+</div>
             <p class="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] italic group-hover:text-blue-200">Tutor Profesional</p>
         </div>
         <div class="bg-white p-16 rounded-[4.5rem] text-center shadow-2xl shadow-blue-900/5 group hover:bg-brand-deepBlue transition-all duration-700 border border-blue-50" data-aos="fade-up" data-aos-delay="400">
             <div class="w-20 h-20 bg-blue-50 text-brand-blue rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 text-3xl transition-transform group-hover:rotate-12 duration-500 shadow-inner group-hover:bg-white group-hover:text-brand-deepBlue">
                 <i class="fas fa-rocket"></i>
             </div>
-            <div class="text-6xl font-black text-brand-dark mb-4 italic tracking-tighter uppercase group-hover:text-white"><span class="count-up" data-target="98">0</span>%</div>
-            <p class="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] italic group-hover:text-blue-200">Peningkatan Hasil</p>
+            <div class="text-6xl font-black text-brand-dark mb-4 italic tracking-tighter uppercase group-hover:text-white"><span class="count-up" data-target="{{ $homeSetting->total_programs }}">0</span></div>
+            <p class="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px] italic group-hover:text-blue-200">Program Belajar</p>
         </div>
     </div>
 </section>
@@ -142,39 +142,19 @@
             <p class="text-blue-200 font-medium max-w-2xl mx-auto italic text-lg opacity-60">Komitmen kami adalah memberikan pengalaman belajar yang melampaui sekadar bangku sekolah.</p>
         </div>
         
+        {{-- Keunggulan dinamis dari database --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-            <!-- Poin 1 -->
-            <div class="bg-white/5 border border-white/5 p-16 rounded-[4.5rem] hover:bg-white/10 transition-all duration-700 group hover:-translate-y-4 hover:shadow-2xl hover:shadow-blue-500/10" data-aos="fade-up" data-aos-delay="100">
+            @forelse($keunggulans as $i => $item)
+            <div class="bg-white/5 border border-white/5 p-16 rounded-[4.5rem] hover:bg-white/10 transition-all duration-700 group hover:-translate-y-4 hover:shadow-2xl hover:shadow-blue-500/10" data-aos="fade-up" data-aos-delay="{{ ($i + 1) * 100 }}">
                 <div class="w-24 h-24 bg-white/10 text-secondary rounded-[3rem] flex items-center justify-center text-4xl mx-auto mb-12 shadow-2xl group-hover:bg-secondary group-hover:text-brand-dark transition-all duration-500 transform group-hover:rotate-12">
-                    <i class="fas fa-fingerprint"></i>
+                    <i class="{{ $item->icon ?? 'fas fa-star' }}"></i>
                 </div>
-                <h3 class="text-3xl font-black mb-6 italic tracking-tight uppercase">Personal</h3>
-                <p class="text-blue-100/60 font-medium text-sm leading-relaxed italic">Setiap siswa memiliki porsi perhatian eksklusif dari tutor kami.</p>
+                <h3 class="text-3xl font-black mb-6 italic tracking-tight uppercase">{{ $item->title }}</h3>
+                <p class="text-blue-100/60 font-medium text-sm leading-relaxed italic">{{ $item->description }}</p>
             </div>
-            <!-- Poin 2 -->
-             <div class="bg-white/5 border border-white/5 p-16 rounded-[4.5rem] hover:bg-white/10 transition-all duration-700 group hover:-translate-y-4 hover:shadow-2xl hover:shadow-blue-500/10" data-aos="fade-up" data-aos-delay="200">
-                <div class="w-24 h-24 bg-white/10 text-secondary rounded-[3rem] flex items-center justify-center text-4xl mx-auto mb-12 shadow-2xl group-hover:bg-secondary group-hover:text-brand-dark transition-all duration-500 transform group-hover:rotate-12">
-                    <i class="fas fa-cubes"></i>
-                </div>
-                <h3 class="text-3xl font-black mb-6 italic tracking-tight uppercase">Logika</h3>
-                <p class="text-blue-100/60 font-medium text-sm leading-relaxed italic">Kami melatih cara berpikir kritis, bukan sekadar teknik menghafal paksa.</p>
-            </div>
-            <!-- Poin 3 -->
-             <div class="bg-white/5 border border-white/5 p-16 rounded-[4.5rem] hover:bg-white/10 transition-all duration-700 group hover:-translate-y-4 hover:shadow-2xl hover:shadow-blue-500/10" data-aos="fade-up" data-aos-delay="300">
-                <div class="w-24 h-24 bg-white/10 text-secondary rounded-[3rem] flex items-center justify-center text-4xl mx-auto mb-12 shadow-2xl group-hover:bg-secondary group-hover:text-brand-dark transition-all duration-500 transform group-hover:rotate-12">
-                    <i class="fas fa-heartbeat"></i>
-                </div>
-                <h3 class="text-3xl font-black mb-6 italic tracking-tight uppercase">Empati</h3>
-                <p class="text-blue-100/60 font-medium text-sm leading-relaxed italic">Membangun hubungan kedekatan emosional antara tutor dan anak.</p>
-            </div>
-            <!-- Poin 4 -->
-             <div class="bg-white/5 border border-white/5 p-16 rounded-[4.5rem] hover:bg-white/10 transition-all duration-700 group hover:-translate-y-4 hover:shadow-2xl hover:shadow-blue-500/10" data-aos="fade-up" data-aos-delay="400">
-                <div class="w-24 h-24 bg-white/10 text-secondary rounded-[3rem] flex items-center justify-center text-4xl mx-auto mb-12 shadow-2xl group-hover:bg-secondary group-hover:text-brand-dark transition-all duration-500 transform group-hover:rotate-12">
-                    <i class="fas fa-medal"></i>
-                </div>
-                <h3 class="text-3xl font-black mb-6 italic tracking-tight uppercase">Juara</h3>
-                <p class="text-blue-100/60 font-medium text-sm leading-relaxed italic">Membuktikan prestasi nyata dalam grafik perkembangan belajar yang terukur.</p>
-            </div>
+            @empty
+            <div class="col-span-4 text-center text-blue-200/40 py-8">Belum ada keunggulan yang ditampilkan.</div>
+            @endforelse
         </div>
     </div>
 </section>

@@ -1,23 +1,207 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\User\HomeController;
+use App\Http\Controllers\User\AboutController;
+use App\Http\Controllers\User\ProgramController as UserProgramController;
+use App\Http\Controllers\User\ContactController;
+use App\Http\Controllers\User\RegisterController;
+use App\Http\Controllers\SitemapController;
 
-Route::get('/', function () {
-    return view('user.home');
+// ---- Admin Controllers ----
+use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\Admin\BerandaController;
+use App\Http\Controllers\Admin\TentangController;
+use App\Http\Controllers\Admin\ProgramAdminController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\AboutSettingController;
+use App\Http\Controllers\Admin\AboutApproachController;
+use App\Http\Controllers\Admin\ProgramPageSettingController;
+use App\Http\Controllers\Admin\ProgramController;
+use App\Http\Controllers\Admin\ProgramFeatureController;
+use App\Http\Controllers\Admin\ProgramHighlightController;
+use App\Http\Controllers\Admin\ContactSettingController;
+use App\Http\Controllers\Admin\ContactCtaFeatureController;
+use App\Http\Controllers\Admin\ContactFaqController;
+use App\Http\Controllers\Admin\SocialMediaController;
+use App\Http\Controllers\Admin\KeunggulanController;
+use App\Http\Controllers\Admin\TestimonialController;
+use App\Http\Controllers\Admin\RegisterHeroSettingController;
+use App\Http\Controllers\Admin\RegisterBenefitController;
+use App\Http\Controllers\Admin\RegisterFormSettingController;
+use App\Http\Controllers\Admin\RegistrationController;
+use App\Http\Controllers\Admin\RegistrationAdminController;
+use App\Http\Controllers\Admin\KontakAdminController;
+use App\Http\Controllers\Admin\FooterAdminController;
+use App\Http\Controllers\Admin\SosmedAdminController;
+use App\Http\Controllers\Admin\SeoSettingController;
+use App\Http\Controllers\Admin\WebsiteSettingController;
+
+// ============================
+// USER / PUBLIC ROUTES
+// ============================
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/program', [UserProgramController::class, 'index'])->name('program');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::get('/register', [RegisterController::class, 'index'])->name('register');
+Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+
+// Sitemap & Robots (public)
+Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+
+// ============================
+// ADMIN AUTH ROUTES (Tanpa middleware — halaman login harus publik)
+// ============================
+Route::prefix('admin')->name('admin.')->group(function () {
+
+    // GET  /admin/login  → tampil form login
+    Route::get('/login', [AdminLoginController::class, 'showLoginForm'])->name('login');
+
+    // POST /admin/login  → proses login
+    Route::post('/login', [AdminLoginController::class, 'login'])->name('login.post');
+
+    // POST /admin/logout → proses logout
+    Route::post('/logout', [AdminLoginController::class, 'logout'])->name('logout');
 });
 
-Route::get('/about', function () {
-    return view('user.about');
-});
+// ============================
+// ADMIN ROUTES (Diproteksi middleware 'admin')
+// ============================
+Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
 
-Route::get('/program', function () {
-    return view('user.program');
-});
+    // ---- DASHBOARD ----
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/contact', function () {
-    return view('user.contact');
-});
+    // Redirect /admin → /admin/dashboard
+    Route::get('/', fn() => redirect()->route('admin.dashboard'));
 
-Route::get('/register', function () {
-    return view('user.register');
+    // ---- BERANDA (CMS baru) ----
+    Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda.index');
+    Route::put('/beranda/hero', [BerandaController::class, 'updateHero'])->name('beranda.hero.update');
+    Route::post('/beranda/keunggulan', [BerandaController::class, 'storeKeunggulan'])->name('beranda.keunggulan.store');
+    Route::get('/beranda/keunggulan/{keunggulan}/edit', [BerandaController::class, 'editKeunggulan'])->name('beranda.keunggulan.edit');
+    Route::put('/beranda/keunggulan/{keunggulan}', [BerandaController::class, 'updateKeunggulan'])->name('beranda.keunggulan.update');
+    Route::delete('/beranda/keunggulan/{keunggulan}', [BerandaController::class, 'destroyKeunggulan'])->name('beranda.keunggulan.destroy');
+    Route::patch('/beranda/keunggulan/{keunggulan}/toggle', [BerandaController::class, 'toggleKeunggulan'])->name('beranda.keunggulan.toggle');
+
+    // ---- BERANDA LEGACY (tetap ada untuk backward compat) ----
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
+    Route::resource('keunggulan', KeunggulanController::class)->except(['show']);
+
+    // ---- WEBSITE SETTINGS ----
+    Route::get('/settings/website', [WebsiteSettingController::class, 'index'])->name('settings.website');
+    Route::post('/settings/website', [WebsiteSettingController::class, 'update'])->name('settings.website.update');
+
+    // ---- SEO SETTINGS ----
+    Route::get('/settings/seo', [SeoSettingController::class, 'index'])->name('settings.seo');
+    Route::post('/settings/seo/global', [SeoSettingController::class, 'updateGlobal'])->name('settings.seo.global');
+    Route::post('/settings/seo/page/{page}', [SeoSettingController::class, 'updatePage'])->name('settings.seo.page');
+    Route::post('/settings/seo/scripts', [SeoSettingController::class, 'updateScripts'])->name('settings.seo.scripts');
+
+    // ---- TENTANG KAMI (CMS baru) ----
+    Route::get('/tentang', [TentangController::class, 'index'])->name('tentang.index');
+    Route::put('/tentang/setting', [TentangController::class, 'updateSetting'])->name('tentang.setting.update');
+    Route::post('/tentang/approach', [TentangController::class, 'storeApproach'])->name('tentang.approach.store');
+    Route::get('/tentang/approach/{approach}/edit', [TentangController::class, 'editApproach'])->name('tentang.approach.edit');
+    Route::put('/tentang/approach/{approach}', [TentangController::class, 'updateApproach'])->name('tentang.approach.update');
+    Route::delete('/tentang/approach/{approach}', [TentangController::class, 'destroyApproach'])->name('tentang.approach.destroy');
+    Route::patch('/tentang/approach/{approach}/toggle', [TentangController::class, 'toggleApproach'])->name('tentang.approach.toggle');
+
+    // ---- TENTANG KAMI LEGACY ----
+    Route::get('/about/settings', [AboutSettingController::class, 'index'])->name('about.settings.index');
+    Route::put('/about/settings', [AboutSettingController::class, 'update'])->name('about.settings.update');
+    Route::resource('about/approach', AboutApproachController::class)
+        ->except(['show'])
+        ->names('about.approach');
+
+    // ---- PROGRAM (CMS baru) ----
+    Route::get('/programs', [ProgramAdminController::class, 'index'])->name('programs.index');
+    Route::get('/programs/create', [ProgramAdminController::class, 'create'])->name('programs.create');
+    Route::post('/programs', [ProgramAdminController::class, 'store'])->name('programs.store');
+    Route::get('/programs/{program}/edit', [ProgramAdminController::class, 'edit'])->name('programs.edit');
+    Route::put('/programs/{program}', [ProgramAdminController::class, 'update'])->name('programs.update');
+    Route::delete('/programs/{program}', [ProgramAdminController::class, 'destroy'])->name('programs.destroy');
+    Route::patch('/programs/{program}/toggle', [ProgramAdminController::class, 'toggle'])->name('programs.toggle');
+    Route::patch('/programs/{program}/toggle-featured', [ProgramAdminController::class, 'toggleFeatured'])->name('programs.toggle-featured');
+    // Features
+    Route::post('/programs/{program}/features', [ProgramAdminController::class, 'storeFeature'])->name('programs.features.store');
+    Route::put('/programs/{program}/features/{feature}', [ProgramAdminController::class, 'updateFeature'])->name('programs.features.update');
+    Route::delete('/programs/{program}/features/{feature}', [ProgramAdminController::class, 'destroyFeature'])->name('programs.features.destroy');
+    // Highlights
+    Route::post('/programs/{program}/highlights', [ProgramAdminController::class, 'storeHighlight'])->name('programs.highlights.store');
+    Route::put('/programs/{program}/highlights/{highlight}', [ProgramAdminController::class, 'updateHighlight'])->name('programs.highlights.update');
+    Route::delete('/programs/{program}/highlights/{highlight}', [ProgramAdminController::class, 'destroyHighlight'])->name('programs.highlights.destroy');
+
+    // ---- PROGRAM LEGACY ----
+    Route::get('/program/settings', [ProgramPageSettingController::class, 'index'])->name('program.settings.index');
+    Route::put('/program/settings', [ProgramPageSettingController::class, 'update'])->name('program.settings.update');
+    Route::resource('program', ProgramController::class)->except(['show']);
+    Route::resource('program.features', ProgramFeatureController::class)
+        ->except(['show'])
+        ->names('program.features');
+    Route::resource('program.highlights', ProgramHighlightController::class)
+        ->except(['show'])
+        ->names('program.highlights');
+
+    // ---- KONTAK ----
+    Route::get('/contact/settings', [ContactSettingController::class, 'index'])->name('contact.settings.index');
+    Route::put('/contact/settings', [ContactSettingController::class, 'update'])->name('contact.settings.update');
+    Route::resource('contact/cta-features', ContactCtaFeatureController::class)
+        ->except(['show'])
+        ->names('contact.cta-features');
+    Route::resource('contact/faq', ContactFaqController::class)
+        ->except(['show'])
+        ->names('contact.faq');
+    Route::resource('contact/social-media', SocialMediaController::class)
+        ->except(['show'])
+        ->names('contact.social-media');
+
+    // ---- KONTAK CMS (baru) ----
+    Route::get('/kontak', [KontakAdminController::class, 'index'])->name('kontak.index');
+    Route::post('/kontak/info', [KontakAdminController::class, 'updateInfo'])->name('kontak.update-info');
+    Route::post('/kontak/faq', [KontakAdminController::class, 'storeFaq'])->name('kontak.faq.store');
+    Route::put('/kontak/faq/{faq}', [KontakAdminController::class, 'updateFaq'])->name('kontak.faq.update');
+    Route::delete('/kontak/faq/{faq}', [KontakAdminController::class, 'destroyFaq'])->name('kontak.faq.destroy');
+    Route::patch('/kontak/faq/{faq}/toggle', [KontakAdminController::class, 'toggleFaq'])->name('kontak.faq.toggle');
+
+    // ---- FOOTER CMS (baru) ----
+    Route::get('/footer', [FooterAdminController::class, 'index'])->name('footer.index');
+    Route::post('/footer', [FooterAdminController::class, 'update'])->name('footer.update');
+
+    // ---- SOSIAL MEDIA CMS (baru) ----
+    Route::get('/sosmed', [SosmedAdminController::class, 'index'])->name('sosmed.index');
+    Route::post('/sosmed', [SosmedAdminController::class, 'store'])->name('sosmed.store');
+    Route::put('/sosmed/{sosmed}', [SosmedAdminController::class, 'update'])->name('sosmed.update');
+    Route::delete('/sosmed/{sosmed}', [SosmedAdminController::class, 'destroy'])->name('sosmed.destroy');
+    Route::patch('/sosmed/{sosmed}/toggle', [SosmedAdminController::class, 'toggle'])->name('sosmed.toggle');
+
+    // ---- TESTIMONI ----
+    Route::resource('testimonial', TestimonialController::class)->except(['show']);
+
+    // ---- DATA PENDAFTAR (CMS baru) ----
+    Route::get('/registrations', [RegistrationAdminController::class, 'index'])->name('registrations.index');
+    Route::get('/registrations/export-csv', [RegistrationAdminController::class, 'exportCsv'])->name('registrations.export-csv');
+    Route::post('/registrations/bulk', [RegistrationAdminController::class, 'bulk'])->name('registrations.bulk');
+    Route::get('/registrations/{registration}', [RegistrationAdminController::class, 'show'])->name('registrations.show');
+    Route::patch('/registrations/{registration}/status', [RegistrationAdminController::class, 'updateStatus'])->name('registrations.update-status');
+    Route::patch('/registrations/{registration}/note', [RegistrationAdminController::class, 'updateNote'])->name('registrations.update-note');
+    Route::delete('/registrations/{registration}', [RegistrationAdminController::class, 'destroy'])->name('registrations.destroy');
+
+    // ---- REGISTER / PENDAFTARAN LEGACY ----
+    Route::get('/register/hero', [RegisterHeroSettingController::class, 'index'])->name('register.hero.index');
+    Route::put('/register/hero', [RegisterHeroSettingController::class, 'update'])->name('register.hero.update');
+    Route::resource('register/benefits', RegisterBenefitController::class)
+        ->except(['show'])
+        ->names('register.benefits');
+    Route::get('/register/form-setting', [RegisterFormSettingController::class, 'index'])->name('register.form-setting.index');
+    Route::put('/register/form-setting', [RegisterFormSettingController::class, 'update'])->name('register.form-setting.update');
+    Route::resource('register/registrations', RegistrationController::class)
+        ->except(['create', 'store'])
+        ->names('register.registrations');
+    Route::patch('register/registrations/{registration}/status', [RegistrationController::class, 'updateStatus'])
+        ->name('register.registrations.update-status');
 });
